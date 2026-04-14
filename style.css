@@ -1118,3 +1118,139 @@ a {
     gap: 16px;
   }
 }
+
+/* ===== TOP BANNER ===== */
+.top-banner {
+  background-color: #1a73e8;
+  color: var(--white);
+  padding: 10px 24px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1002;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: transform 0.3s ease;
+}
+
+.top-banner.hidden {
+  transform: translateY(-100%);
+}
+
+.top-banner-content {
+  text-align: center;
+}
+
+.top-banner-link {
+  color: var(--white);
+  text-decoration: underline;
+  font-weight: 600;
+}
+
+.top-banner-link:hover {
+  text-decoration: none;
+}
+
+.top-banner-close {
+  position: absolute;
+  right: 16px;
+  background: none;
+  border: none;
+  color: var(--white);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.8;
+  transition: opacity 0.2s;
+}
+
+.top-banner-close:hover {
+  opacity: 1;
+}
+
+body.has-banner .navbar {
+  top: 40px;
+}
+
+/* ===== FAQ SECTION ===== */
+.faq {
+  padding: 100px 0;
+  background: var(--white);
+}
+
+.faq-container {
+  max-width: 800px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.faq-item {
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  transition: var(--transition);
+}
+
+.faq-item:hover {
+  border-color: var(--blue-200);
+  box-shadow: var(--shadow-sm);
+}
+
+.faq-question {
+  width: 100%;
+  text-align: left;
+  padding: 24px;
+  background: none;
+  border: none;
+  font-family: var(--font);
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--blue-600);
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.faq-icon {
+  flex-shrink: 0;
+  margin-left: 16px;
+  transition: transform 0.3s ease;
+  color: var(--blue-600);
+}
+
+.faq-item.active .faq-icon {
+  transform: rotate(180deg);
+}
+
+.faq-answer {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-out;
+}
+
+.faq-answer p {
+  padding: 0 24px 24px;
+  color: var(--gray-600);
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
+.hero-seats-banner {
+  display: inline-block;
+  padding: 10px 24px;
+  background-color: var(--blue-50);
+  color: var(--blue-600);
+  border-radius: var(--radius-xl);
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-top: 10px;
+}

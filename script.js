@@ -83,3 +83,36 @@ function updateActiveNav() {
 
 window.addEventListener('scroll', updateActiveNav);
 updateActiveNav();
+
+// ===== TOP BANNER =====
+const topBannerClose = document.getElementById('topBannerClose');
+const topBanner = document.getElementById('topBanner');
+
+if (topBannerClose && topBanner) {
+  topBannerClose.addEventListener('click', () => {
+    topBanner.classList.add('hidden');
+    document.body.classList.remove('has-banner');
+  });
+}
+
+// ===== FAQ ACCORDION =====
+const faqQuestions = document.querySelectorAll('.faq-question');
+
+faqQuestions.forEach(question => {
+  question.addEventListener('click', () => {
+    const item = question.parentElement;
+    const answer = question.nextElementSibling;
+    const isActive = item.classList.contains('active');
+
+    // Close all other FAQs
+    document.querySelectorAll('.faq-item').forEach(otherItem => {
+      otherItem.classList.remove('active');
+      otherItem.querySelector('.faq-answer').style.maxHeight = null;
+    });
+
+    if (!isActive) {
+      item.classList.add('active');
+      answer.style.maxHeight = answer.scrollHeight + 'px';
+    }
+  });
+});
