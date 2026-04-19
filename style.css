@@ -91,6 +91,105 @@ a {
 .fade-in:nth-child(3) { transition-delay: 0.2s; }
 .fade-in:nth-child(4) { transition-delay: 0.3s; }
 
+/* Custom Animations */
+.slide-in-left {
+  opacity: 0;
+  transform: translateX(-50px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+.slide-in-left.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.flip-in-bottom {
+  opacity: 0;
+  transform: perspective(400px) rotateX(20deg) translateY(50px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+.flip-in-bottom.visible {
+  opacity: 1;
+  transform: perspective(400px) rotateX(0deg) translateY(0);
+}
+
+.zoom-in {
+  opacity: 0;
+  transform: scale(0.9);
+  transition: opacity 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275), transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.zoom-in.visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.slide-in-right {
+  opacity: 0;
+  transform: translateX(50px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+.slide-in-right.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+@keyframes floating {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+.floating-anim {
+  animation: floating 3s ease-in-out infinite;
+}
+
+@keyframes glowPulse {
+  0% { box-shadow: 0 0 10px rgba(79, 142, 247, 0.5); }
+  50% { box-shadow: 0 0 25px rgba(79, 142, 247, 0.9); }
+  100% { box-shadow: 0 0 10px rgba(79, 142, 247, 0.5); }
+}
+.glow-pulse {
+  animation: glowPulse 2s infinite;
+}
+
+/* Custom Cursor */
+body, a, button, input, textarea, .faq-question {
+  cursor: none !important;
+}
+
+.cursor-dot {
+  position: fixed;
+  top: 0; left: 0;
+  width: 8px; height: 8px;
+  background: #4f8ef7;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 10px #4f8ef7;
+  transition: width 0.3s, height 0.3s;
+}
+
+.cursor-trailer {
+  position: fixed;
+  top: 0; left: 0;
+  width: 30px; height: 30px;
+  border: 2px solid transparent;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9998;
+  transform: translate(-50%, -50%);
+  background: linear-gradient(var(--white), var(--white)) padding-box, linear-gradient(135deg, #4f8ef7, #9b51e0) border-box;
+  transition: width 0.3s, height 0.3s;
+}
+
+.cursor-hover .cursor-dot {
+  width: 12px; height: 12px;
+  box-shadow: 0 0 20px #4f8ef7;
+}
+
+.cursor-hover .cursor-trailer {
+  width: 50px; height: 50px;
+}
+
 /* ===== NAVBAR ===== */
 .navbar {
   position: fixed;

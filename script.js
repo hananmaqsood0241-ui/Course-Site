@@ -42,8 +42,82 @@ const observer = new IntersectionObserver((entries) => {
   });
 }, observerOptions);
 
-document.querySelectorAll('.fade-in').forEach(el => {
+document.querySelectorAll('.fade-in, .slide-in-left, .flip-in-bottom, .zoom-in, .slide-in-right').forEach(el => {
   observer.observe(el);
+});
+
+// ===== STATS COUNT UP ANIMATION =====
+const stats = document.querySelectorAll('.stat-number');
+let hasCounted = false;
+
+function countUp(el) {
+  const target = parseFloat(el.getAttribute('data-target'));
+  const isFloat = target % 1 !== 0;
+  let count = 0;
+  const speed = 60; // frames
+  const inc = target / speed;
+
+  function updateCount() {
+    count += inc;
+    if (count < target) {
+      el.innerText = isFloat ? count.toFixed(1) : Math.floor(count);
+      requestAnimationFrame(updateCount);
+    } else {
+      el.innerText = target;
+    }
+  }
+  updateCount();
+}
+
+const statsObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting && !hasCounted) {
+      hasCounted = true;
+      stats.forEach(stat => countUp(stat));
+    }
+  });
+}, { threshold: 0.5 });
+
+const heroStats = document.querySelector('.hero-stats');
+if (heroStats) {
+  statsObserver.observe(heroStats);
+}
+
+// ===== CUSTOM CURSOR =====
+const cursorDot = document.createElement('div');
+cursorDot.classList.add('cursor-dot');
+document.body.appendChild(cursorDot);
+
+const cursorTrailer = document.createElement('div');
+cursorTrailer.classList.add('cursor-trailer');
+document.body.appendChild(cursorTrailer);
+
+let mouseX = 0, mouseY = 0, trailerX = 0, trailerY = 0;
+
+window.addEventListener('mousemove', (e) => {
+  mouseX = e.clientX;
+  mouseY = e.clientY;
+  cursorDot.style.transform = `translate(calc(${mouseX}px - 50%), calc(${mouseY}px - 50%))`;
+});
+
+function animateTrailer() {
+  let dx = mouseX - trailerX;
+  let dy = mouseY - trailerY;
+  trailerX += dx * 0.15;
+  trailerY += dy * 0.15;
+  cursorTrailer.style.transform = `translate(calc(${trailerX}px - 50%), calc(${trailerY}px - 50%))`;
+  requestAnimationFrame(animateTrailer);
+}
+animateTrailer();
+
+const interactables = document.querySelectorAll('a, button, input, textarea, .faq-question');
+interactables.forEach(el => {
+  el.addEventListener('mouseenter', () => {
+    document.body.classList.add('cursor-hover');
+  });
+  el.addEventListener('mouseleave', () => {
+    document.body.classList.remove('cursor-hover');
+  });
 });
 
 // ===== SMOOTH SCROLL FOR ANCHOR LINKS =====
