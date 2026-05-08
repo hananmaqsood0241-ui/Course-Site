@@ -1,3 +1,13 @@
+// ===== PRELOADER =====
+window.addEventListener('load', () => {
+  const preloader = document.getElementById('preloader');
+  if (preloader) {
+    setTimeout(() => {
+      preloader.classList.add('hidden');
+    }, 1200);
+  }
+});
+
 // ===== NAVBAR SCROLL EFFECT =====
 const navbar = document.getElementById('navbar');
 
@@ -190,3 +200,194 @@ faqQuestions.forEach(question => {
     }
   });
 });
+
+// ===== PARTICLE BACKGROUND =====
+(function initParticles() {
+  const canvas = document.getElementById('particleCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  let particles = [];
+  const PARTICLE_COUNT = 50;
+
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  class Particle {
+    constructor() { this.reset(); }
+    reset() {
+      this.x = Math.random() * canvas.width;
+      this.y = Math.random() * canvas.height;
+      this.vx = (Math.random() - 0.5) * 0.4;
+      this.vy = (Math.random() - 0.5) * 0.4;
+      this.radius = Math.random() * 2 + 0.5;
+      this.opacity = Math.random() * 0.5 + 0.1;
+    }
+    update() {
+      this.x += this.vx;
+      this.y += this.vy;
+      if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+      if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+    }
+    draw() {
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(26, 115, 232, ${this.opacity})`;
+      ctx.fill();
+    }
+  }
+
+  for (let i = 0; i < PARTICLE_COUNT; i++) {
+    particles.push(new Particle());
+  }
+
+  function connectParticles() {
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 150) {
+          ctx.beginPath();
+          ctx.strokeStyle = `rgba(26, 115, 232, ${0.08 * (1 - dist / 150)})`;
+          ctx.lineWidth = 0.5;
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.stroke();
+        }
+      }
+    }
+  }
+
+  function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    particles.forEach(p => { p.update(); p.draw(); });
+    connectParticles();
+    requestAnimationFrame(animate);
+  }
+  animate();
+})();
+
+// ===== COUNTDOWN TIMER (May 10, 2026 7:00 PM PKT) =====
+(function initCountdown() {
+  // May 10, 2026 at 7:00 PM PKT (UTC+5) = 14:00 UTC
+  const endDate = new Date('2026-05-10T19:00:00+05:00');
+
+  function update() {
+    const now = new Date();
+    const diff = endDate - now;
+    
+    const pad = n => String(n).padStart(2, '0');
+    const el = (id) => document.getElementById(id);
+
+    if (diff <= 0) {
+      ['cdDays','cdHours','cdMins','cdSecs','popDays','popHours','popMins','popSecs'].forEach(id => {
+        if (el(id)) el(id).textContent = '00';
+      });
+      return;
+    }
+
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+    const mins = Math.floor((diff / (1000 * 60)) % 60);
+    const secs = Math.floor((diff / 1000) % 60);
+
+    // Update hero countdown
+    if (el('cdDays')) el('cdDays').textContent = pad(days);
+    if (el('cdHours')) el('cdHours').textContent = pad(hours);
+    if (el('cdMins')) el('cdMins').textContent = pad(mins);
+    if (el('cdSecs')) el('cdSecs').textContent = pad(secs);
+
+    // Update popup countdown
+    if (el('popDays')) el('popDays').textContent = pad(days);
+    if (el('popHours')) el('popHours').textContent = pad(hours);
+    if (el('popMins')) el('popMins').textContent = pad(mins);
+    if (el('popSecs')) el('popSecs').textContent = pad(secs);
+  }
+
+  update();
+  setInterval(update, 1000);
+})();
+
+// ===== URGENCY POPUP =====
+(function initUrgencyPopup() {
+  const overlay = document.getElementById('urgencyOverlay');
+  const closeBtn = document.getElementById('urgencyClose');
+  if (!overlay || !closeBtn) return;
+
+  // Show popup 2 seconds after page loads
+  setTimeout(() => {
+    overlay.classList.add('active');
+  }, 2000);
+
+  // Close popup on X button
+  closeBtn.addEventListener('click', () => {
+    overlay.classList.remove('active');
+  });
+
+  // Close on overlay click (outside popup)
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) {
+      overlay.classList.remove('active');
+    }
+  });
+
+  // Close on Escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      overlay.classList.remove('active');
+    }
+  });
+})();
+
+// ===== SCROLL PROGRESS BAR =====
+(function initScrollProgress() {
+  const bar = document.getElementById('scrollProgress');
+  if (!bar) return;
+
+  window.addEventListener('scroll', () => {
+    const scrollTop = window.scrollY;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const percent = (scrollTop / docHeight) * 100;
+    bar.style.width = percent + '%';
+  });
+})();
+
+// ===== BACK TO TOP BUTTON =====
+(function initBackToTop() {
+  const btn = document.getElementById('backToTop');
+  if (!btn) return;
+
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 400) {
+      btn.classList.add('visible');
+    } else {
+      btn.classList.remove('visible');
+    }
+  });
+
+  btn.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+})();
+
+// ===== TEXT TYPING EFFECT ON HERO BADGE =====
+(function initTyping() {
+  const badge = document.querySelector('.hero-badge');
+  if (!badge) return;
+  const text = badge.textContent;
+  badge.textContent = '';
+  badge.style.visibility = 'visible';
+  let i = 0;
+  function type() {
+    if (i < text.length) {
+      badge.textContent += text.charAt(i);
+      i++;
+      setTimeout(type, 40);
+    }
+  }
+  setTimeout(type, 1500);
+})();
