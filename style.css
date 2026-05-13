@@ -162,7 +162,7 @@ body, a, button, input, textarea, .faq-question {
   background: #4f8ef7;
   border-radius: 50%;
   pointer-events: none;
-  z-index: 9999;
+  z-index: 999999;
   transform: translate(-50%, -50%);
   box-shadow: 0 0 10px #4f8ef7;
   transition: width 0.3s, height 0.3s;
@@ -175,7 +175,7 @@ body, a, button, input, textarea, .faq-question {
   border: 2px solid transparent;
   border-radius: 50%;
   pointer-events: none;
-  z-index: 9998;
+  z-index: 999998;
   transform: translate(-50%, -50%);
   background: linear-gradient(var(--white), var(--white)) padding-box, linear-gradient(135deg, #4f8ef7, #9b51e0) border-box;
   transition: width 0.3s, height 0.3s;

@@ -318,10 +318,10 @@ faqQuestions.forEach(question => {
   const closeBtn = document.getElementById('urgencyClose');
   if (!overlay || !closeBtn) return;
 
-  // Show popup 2 seconds after page loads
+  // Show popup 5 seconds after page loads
   setTimeout(() => {
     overlay.classList.add('active');
-  }, 2000);
+  }, 5000);
 
   // Close popup on X button
   closeBtn.addEventListener('click', () => {
