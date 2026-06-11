@@ -1017,6 +1017,17 @@ a {
   color: white;
 }
 
+.badge-new {
+  background: linear-gradient(135deg, #e040fb, #7c4dff);
+  color: white;
+  animation: badgePulse 2s ease-in-out infinite;
+}
+
+@keyframes badgePulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(224, 64, 251, 0.4); }
+  50% { box-shadow: 0 0 12px 4px rgba(224, 64, 251, 0.2); }
+}
+
 /* ===== PAYMENT INFO BOX ===== */
 .payment-info-box {
   background: var(--blue-50);

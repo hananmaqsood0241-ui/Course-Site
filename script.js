@@ -450,7 +450,6 @@ faqQuestions.forEach(question => {
   const cards = track.querySelectorAll('.testimonial-card');
   if (cards.length === 0) return;
 
-  let isMobile = window.innerWidth <= 992;
   let dotsContainer = null;
   let activeIndex = 0;
   let startX = 0;
@@ -459,75 +458,84 @@ faqQuestions.forEach(question => {
   let isDragging = false;
   let autoplayInterval = null;
 
+  function getCardsPerView() {
+    return window.innerWidth <= 768 ? 1 : 2;
+  }
+
   function setupCarousel() {
-    isMobile = window.innerWidth <= 992;
-    if (isMobile) {
-      // Style slides dynamically for swipe behavior
-      track.style.display = 'flex';
-      track.style.transition = 'transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
-      
-      cards.forEach(card => {
-        card.style.flex = '0 0 100%';
-        card.style.maxWidth = '100%';
-      });
+    const cardsPerView = getCardsPerView();
+    const totalSlides = Math.ceil(cards.length / cardsPerView);
 
-      // Create dots indicators if they don't exist
-      if (!dotsContainer) {
-        dotsContainer = document.createElement('div');
-        dotsContainer.className = 'carousel-dots';
-        dotsContainer.style.display = 'flex';
-        dotsContainer.style.justifyContent = 'center';
-        dotsContainer.style.gap = '8px';
-        dotsContainer.style.marginTop = '24px';
+    // Style slides dynamically for swipe behavior
+    track.style.display = 'flex';
+    track.style.transition = 'transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
+    track.style.gap = '24px';
+    
+    // Ensure parent hides overflow
+    track.parentNode.style.overflow = 'hidden';
+    track.parentNode.style.padding = '10px 0';
 
-        cards.forEach((_, index) => {
-          const dot = document.createElement('button');
-          dot.className = `carousel-dot ${index === 0 ? 'active' : ''}`;
-          dot.ariaLabel = `Go to slide ${index + 1}`;
-          dot.addEventListener('click', () => goToSlide(index));
-          dotsContainer.appendChild(dot);
-        });
+    cards.forEach(card => {
+      // Calculate width accounting for gap: (100% - totalGap) / cardsPerView
+      const gapOffset = (cardsPerView - 1) * 24 / cardsPerView;
+      card.style.flex = `0 0 calc((100% / ${cardsPerView}) - ${gapOffset}px)`;
+      card.style.maxWidth = `calc((100% / ${cardsPerView}) - ${gapOffset}px)`;
+    });
 
-        track.parentNode.appendChild(dotsContainer);
+    // Create dots indicators if they don't exist
+    if (!dotsContainer) {
+      dotsContainer = document.createElement('div');
+      dotsContainer.className = 'carousel-dots';
+      dotsContainer.style.display = 'flex';
+      dotsContainer.style.justifyContent = 'center';
+      dotsContainer.style.gap = '8px';
+      dotsContainer.style.marginTop = '32px';
 
-        // Inject dynamic style for dot indicators if not present in style.css
-        if (!document.getElementById('carousel-dots-style')) {
-          const style = document.createElement('style');
-          style.id = 'carousel-dots-style';
-          style.innerHTML = `
-            .carousel-dot {
-              width: 8px; height: 8px; border-radius: 50%; border: none; background: #CBD5E1; cursor: pointer; transition: 0.3s;
-            }
-            .carousel-dot.active {
-              background: #1A73E8; width: 24px; border-radius: 4px;
-            }
-          `;
-          document.head.appendChild(style);
-        }
+      track.parentNode.appendChild(dotsContainer);
+
+      // Inject dynamic style for dot indicators if not present in style.css
+      if (!document.getElementById('carousel-dots-style')) {
+        const style = document.createElement('style');
+        style.id = 'carousel-dots-style';
+        style.innerHTML = `
+          .carousel-dot {
+            width: 8px; height: 8px; border-radius: 50%; border: none; background: #CBD5E1; cursor: pointer; transition: 0.3s; padding: 0;
+          }
+          .carousel-dot.active {
+            background: #1A73E8; width: 24px; border-radius: 4px;
+          }
+        `;
+        document.head.appendChild(style);
       }
-      
-      goToSlide(activeIndex);
-      startAutoplay();
-    } else {
-      // Restore desktop styles
-      track.style.display = 'grid';
-      track.style.transform = 'none';
-      track.style.transition = 'none';
-      cards.forEach(card => {
-        card.style.flex = '';
-        card.style.maxWidth = '';
-      });
-      if (dotsContainer) {
-        dotsContainer.remove();
-        dotsContainer = null;
-      }
-      stopAutoplay();
     }
+
+    // Refresh dots
+    dotsContainer.innerHTML = '';
+    for (let i = 0; i < totalSlides; i++) {
+      const dot = document.createElement('button');
+      dot.className = `carousel-dot ${i === 0 ? 'active' : ''}`;
+      dot.ariaLabel = `Go to slide ${i + 1}`;
+      dot.addEventListener('click', () => goToSlide(i));
+      dotsContainer.appendChild(dot);
+    }
+    
+    if (activeIndex >= totalSlides) activeIndex = totalSlides - 1;
+    
+    goToSlide(activeIndex);
+    startAutoplay();
   }
 
   function goToSlide(index) {
-    activeIndex = (index + cards.length) % cards.length;
-    currentTranslate = -activeIndex * track.clientWidth;
+    const cardsPerView = getCardsPerView();
+    const totalSlides = Math.ceil(cards.length / cardsPerView);
+    
+    activeIndex = (index + totalSlides) % totalSlides;
+    
+    // Calculate translate taking gap into account
+    const cardWidth = track.firstElementChild.getBoundingClientRect().width;
+    const scrollAmount = activeIndex * cardsPerView * (cardWidth + 24);
+    
+    currentTranslate = -scrollAmount;
     prevTranslate = currentTranslate;
     track.style.transform = `translateX(${currentTranslate}px)`;
 
@@ -552,16 +560,15 @@ faqQuestions.forEach(question => {
   }
 
   // Gesture hooks
-  track.addEventListener('touchstart', touchStart);
+  track.addEventListener('touchstart', touchStart, {passive: true});
   track.addEventListener('touchend', touchEnd);
-  track.addEventListener('touchmove', touchMove);
+  track.addEventListener('touchmove', touchMove, {passive: true});
   track.addEventListener('mousedown', touchStart);
   track.addEventListener('mouseup', touchEnd);
   track.addEventListener('mouseleave', touchEnd);
   track.addEventListener('mousemove', touchMove);
 
   function touchStart(e) {
-    if (!isMobile) return;
     stopAutoplay();
     isDragging = true;
     startX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
@@ -569,7 +576,7 @@ faqQuestions.forEach(question => {
   }
 
   function touchMove(e) {
-    if (!isDragging || !isMobile) return;
+    if (!isDragging) return;
     const currentX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
     const diff = currentX - startX;
     currentTranslate = prevTranslate + diff;
@@ -577,14 +584,14 @@ faqQuestions.forEach(question => {
   }
 
   function touchEnd() {
-    if (!isDragging || !isMobile) return;
+    if (!isDragging) return;
     isDragging = false;
     const movedBy = currentTranslate - prevTranslate;
     track.style.transition = 'transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
 
-    if (movedBy < -100 && activeIndex < cards.length - 1) {
+    if (movedBy < -50) {
       goToSlide(activeIndex + 1);
-    } else if (movedBy > 100 && activeIndex > 0) {
+    } else if (movedBy > 50) {
       goToSlide(activeIndex - 1);
     } else {
       goToSlide(activeIndex);
@@ -593,7 +600,11 @@ faqQuestions.forEach(question => {
   }
 
   setupCarousel();
-  window.addEventListener('resize', setupCarousel);
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(setupCarousel, 250);
+  });
 })();
 
 // ===== PREMIUM ON-SITE CHECKOUT / ENROLLMENT FLOW =====
